@@ -39,14 +39,14 @@ jobs:
         id: test
 
       - name: Verify output
-        run: test ${{ steps.test.outputs.created_project_path }} = `UnityProject~`
+        run: test "${{ steps.test.outputs.created_project_path }}" = "UnityProject~"
 
       - name: Verify export environment variable
-        run: test ${{ env.created_project_path }} = `UnityProject~`
+        run: test "${{ env.created_project_path }}" = "UnityProject~"
 
       - name: Verify created project
         run: |
-          ls -la ${{ steps.test.outputs.created_project_path }}
+          ls -la "${{ steps.test.outputs.created_project_path }}"
 
   notify:
     needs: [ build, test ]
