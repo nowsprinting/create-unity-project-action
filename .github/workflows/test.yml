@@ -1,24 +1,49 @@
 name: 'build-test'
-on: # rebuild any PRs and main branch changes
-  pull_request:
+
+on:
   push:
     branches:
       - main
-      - 'releases/*'
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    types: [ opened, synchronize, reopened ]  # Same as default
+    paths-ignore:
+      - '**.md'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: write-all
 jobs:
-  build: # make sure build/ci work properly
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - run: |
-          npm install
-      - run: |
+      - uses: actions/checkout@v3
+
+      - name: Run tests
+        run: |
+          npm ci
           npm run all
-  test: # make sure the action works on a clean machine without building
+
+  test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: ./
+      - uses: actions/checkout@v3
+
+      - name: Test this action
+        uses: ./
         with:
           milliseconds: 1000
+
+  notify:
+    needs: [ build, test ]
+    if: failure()
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: Gamesight/slack-workflow-status@v1.2.0
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
