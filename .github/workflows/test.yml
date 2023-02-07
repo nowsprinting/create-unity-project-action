@@ -35,7 +35,12 @@ jobs:
       - name: Test this action
         uses: ./
         with:
-          milliseconds: 1000
+          project_path: UnityProject~
+
+      - name: Verify this action
+        run: |
+          ls -la
+          ls -la UnityProject~
 
   notify:
     needs: [ build, test ]

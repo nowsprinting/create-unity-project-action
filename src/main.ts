@@ -1,16 +1,33 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
+import * as io from '@actions/io'
+import * as path from 'path'
 
-async function run(): Promise<void> {
+export function dist_dir(): string {
+  const root = path.dirname(path.dirname(__filename))
+  return path.join(root, `dist`)
+}
+
+function github_workspace(): string {
+  const workspace = process.env.GITHUB_WORKSPACE
+  if (workspace === undefined) {
+    throw new Error(`process.env.GITHUB_WORKSPACE is undefined`)
+  }
+  return workspace
+}
+
+export async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
+    const dest: string = core.getInput('project_path')
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    const options = {recursive: true, force: false}
+    await io.cp(
+      path.join(dist_dir(), 'UnityProject~'),
+      path.join(github_workspace(), dest),
+      options
+    )
 
-    core.setOutput('time', new Date().toTimeString())
+    core.setOutput('created_project_path', dest)
+    core.exportVariable('created_project_path', dest)
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }

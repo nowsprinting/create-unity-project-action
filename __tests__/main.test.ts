@@ -1,29 +1,36 @@
-import {wait} from '../src/wait'
+import {dist_dir} from '../src/main'
+import {run} from '../src/main'
+import * as core from '@actions/core'
+import * as io from '@actions/io'
 import * as process from 'process'
-import * as cp from 'child_process'
 import * as path from 'path'
+import * as fs from 'fs'
 import {expect, test} from '@jest/globals'
 
-test('throws invalid number', async () => {
-  const input = parseInt('foo', 10)
-  await expect(wait(input)).rejects.toThrow('milliseconds not a number')
+function test_dir(): string {
+  const root = path.dirname(path.dirname(__filename))
+  return path.join(root, `test`)
+}
+
+beforeEach(async () => {
+  await io.rmRF(test_dir())
 })
 
-test('wait 500 ms', async () => {
-  const start = new Date()
-  await wait(500)
-  const end = new Date()
-  var delta = Math.abs(end.getTime() - start.getTime())
-  expect(delta).toBeGreaterThan(450)
+test(`test dist_dir()`, () => {
+  const actual = dist_dir()
+  expect(actual.substring(actual.length - 5)).toEqual(`/dist`)
 })
 
-// shows how the runner will run a javascript action with env / stdout protocol
-test('test runs', () => {
-  process.env['INPUT_MILLISECONDS'] = '500'
-  const np = process.execPath
-  const ip = path.join(__dirname, '..', 'lib', 'main.js')
-  const options: cp.ExecFileSyncOptions = {
-    env: process.env
-  }
-  console.log(cp.execFileSync(np, [ip], options).toString())
+test('test runs', async () => {
+  const project_path = 'test2/testProject~'
+
+  process.env['INPUT_PROJECT_PATH'] = project_path
+  process.env['GITHUB_WORKSPACE'] = test_dir()
+
+  const spy = jest.spyOn(core, 'setOutput')
+  await run()
+
+  expect(fs.existsSync(path.join(test_dir(), project_path))).toEqual(true)
+  expect(spy).toHaveBeenCalledWith('created_project_path', project_path)
+  expect(process.env.created_project_path).toEqual(project_path)
 })
