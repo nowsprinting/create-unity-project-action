@@ -1,105 +1,120 @@
-<p align="center">
-  <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
-</p>
+# create-unity-project-action
 
-# Create a JavaScript Action using TypeScript
+[![build-test](https://github.com/nowsprinting/create-unity-project-action/actions/workflows/test.yml/badge.svg)](https://github.com/nowsprinting/create-unity-project-action/actions/workflows/test.yml)
 
-Use this template to bootstrap the creation of a TypeScript action.:rocket:
 
-This template includes compilation support, tests, a validation workflow, publishing, and versioning guidance.  
+Create empty Unity3D project for run tests.
+It is useful to testing UPM package.
 
-If you are new, there's also a simpler introduction.  See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
+This action does not require a Unity license. Because we are copying the Unity 2019.4.0f1 project template.
 
-## Create an action from this template
 
-Click the `Use this Template` and provide the new repo details for your action
+## Inputs
 
-## Code in Main
+### project_path
 
-> First, you'll need to have a reasonably modern version of `node` handy. This won't work with versions older than 9, for instance.
+Path of the Unity project to be created, relative from /github/workspace.
+Default value is `UnityProject~`.
 
-Install the dependencies  
-```bash
-$ npm install
-```
 
-Build the typescript and package it for distribution
-```bash
-$ npm run build && npm run package
-```
+## Outputs
 
-Run the tests :heavy_check_mark:  
-```bash
-$ npm test
+### created_project_path
 
- PASS  ./index.test.js
-  ✓ throws invalid number (3ms)
-  ✓ wait 500 ms (504ms)
-  ✓ test runs (95ms)
+Path of the created Unity project, relative from /github/workspace.
+Same as `project_path`.
 
-...
-```
 
-## Change action.yml
+## Exported environment variables
 
-The action.yml defines the inputs and output for your action.
+### created_project_path
 
-Update the action.yml with your name, description, inputs and outputs for your action.
+Path of the created Unity project, relative from /github/workspace.
+Same as `project_path`.
 
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
 
-## Change the Code
+## Example usage
 
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
-
-```javascript
-import * as core from '@actions/core';
-...
-
-async function run() {
-  try { 
-      ...
-  } 
-  catch (error) {
-    core.setFailed(error.message);
-  }
-}
-
-run()
-```
-
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
-
-## Publish to a distribution branch
-
-Actions are run from GitHub repos so we will checkin the packed dist folder. 
-
-Then run [ncc](https://github.com/zeit/ncc) and push the results:
-```bash
-$ npm run package
-$ git add dist
-$ git commit -a -m "prod dependencies"
-$ git push origin releases/v1
-```
-
-Note: We recommend using the `--license` option for ncc, which will create a license file for all of the production node modules used in your project.
-
-Your action is now published! :rocket: 
-
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-
-## Validate
-
-You can now validate the action by referencing `./` in a workflow in your repo (see [test.yml](.github/workflows/test.yml))
+This example assumes that package.json is in the repository root, generates a new Unity project and runs the tests.
 
 ```yaml
-uses: ./
-with:
-  milliseconds: 1000
+on:
+  push:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Crete project for tests
+        uses: nowsprinting/create-unity-project-action@master
+        with:
+          project_path: UnityProject~
+
+      - name: Install dependencies
+        run: |
+          npm install -g openupm-cli
+          openupm add com.unity.test-framework@1.3.2
+          openupm add com.unity.testtools.codecoverage@1.2.2
+          openupm add --test your.package.name@file:../../
+        working-directory: ${{ env.created_project_path }}
+
+      - name: Run tests
+        uses: game-ci/unity-test-runner@v2
+        with:
+          projectPath: ${{ env.created_project_path }}
+          unityVersion: 2021.3.17f1
 ```
 
-See the [actions tab](https://github.com/actions/typescript-action/actions) for runs of this action! :rocket:
 
-## Usage:
+## License
 
-After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) to reference the stable and latest V1 action
+MIT License
+
+
+## How to contribute
+
+Open an issue or create a pull request.
+
+### Start developing
+
+```shell
+npm ci
+```
+
+### Run tests
+
+```shell
+npm test
+```
+
+### Package (must run before checked-in)
+
+```shell
+npm run all
+git add dist/
+git commit -m"Update dist"
+```
+
+### Create pull request
+
+Be grateful if you could label the PR as `enhancement`, `bug`, `chore` and `documentation`. See [PR Labeler settings](.github/pr-labeler.yml) for automatically labeling from the branch name.
+
+
+## Release workflow
+
+Run `Actions | Create release pull request | Run workflow` and merge created PR.
+(Or bump version in package.json on default branch)
+
+Then, Will do the release process automatically by [Release](.github/workflows/release.yml) workflow.
+
+Enable `Publish this Action to the GitHub Marketplace` on edit release page, are publish to GitHub Marketplace.
+(Need manual operation)
+
+Do **NOT** manually operation the following operations:
+
+- Create release tag
+- Publish draft releases

@@ -1,16 +1,16 @@
 name: 'Create Unity Project'
-description: 'Create new empty Unity3D project'
+description: 'Create empty Unity3D project'
 author: 'nowsprinting'
 
 inputs:
   project_path:
     required: false
-    description: 'Unity project path for create (relative from /github/workspace)'
+    description: 'Path of the Unity project to be created, relative from /github/workspace.'
     default: 'UnityProject~'
 
 outputs:
   created_project_path:
-    description: 'Created Unity project path (relative from /github/workspace)'
+    description: 'Path of the created Unity project, relative from /github/workspace.'
 
 runs:
   using: 'node16'
