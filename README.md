@@ -11,7 +11,7 @@ This action does not require a Unity license. Because we are copying the Unity 2
 
 ## Inputs
 
-### project_path
+### project\_path
 
 Path of the Unity project to be created, relative from /github/workspace.
 Default value is `UnityProject~`.
@@ -19,7 +19,7 @@ Default value is `UnityProject~`.
 
 ## Outputs
 
-### created_project_path
+### created\_project\_path
 
 Path of the created Unity project, relative from /github/workspace.
 Same as `project_path`.
@@ -27,7 +27,7 @@ Same as `project_path`.
 
 ## Exported environment variables
 
-### created_project_path
+### created\_project\_path
 
 Path of the created Unity project, relative from /github/workspace.
 Same as `project_path`.
@@ -49,8 +49,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Crete project for tests
-        uses: nowsprinting/create-unity-project-action@master
+      - name: Crete Unity project for tests
+        uses: nowsprinting/create-unity-project-action@v1
         with:
           project_path: UnityProject~
 
