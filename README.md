@@ -35,7 +35,7 @@ Same as `project_path`.
 
 ## Example usage
 
-This example assumes that package.json is in the repository root, generates a new Unity project and runs the tests.
+This example assumes that package.json is in the repository root, creation a new Unity project and runs the tests.
 
 ```yaml
 on:
