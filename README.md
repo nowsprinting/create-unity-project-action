@@ -3,10 +3,13 @@
 [![build-test](https://github.com/nowsprinting/create-unity-project-action/actions/workflows/test.yml/badge.svg)](https://github.com/nowsprinting/create-unity-project-action/actions/workflows/test.yml)
 
 
-Create empty Unity3D project for run tests.
-It is useful to testing UPM package.
+Create an empty Unity3D project for running tests.
+It is useful for testing UPM package.
 
-This action does not require a Unity license. Because we are copying the Unity 2019.4.0f1 project template.
+This action does not require a Unity license.
+Because this copies the Unity 2018.1.0f1 [^1] project template.
+
+[^1]: This version started UPM support
 
 
 ## Inputs
@@ -57,10 +60,14 @@ jobs:
       - name: Install dependencies
         run: |
           npm install -g openupm-cli
-          openupm add com.unity.test-framework@1.3.2
-          openupm add com.unity.testtools.codecoverage@1.2.2
-          openupm add --test your.package.name@file:../../
+          openupm add -f com.unity.test-framework@1.3.2
+          openupm add -f com.unity.testtools.codecoverage@1.2.2
+          openupm add -ft your.package.name@file:../../
         working-directory: ${{ env.created_project_path }}
+
+      - name: Move samples to include in run tests
+        run: |
+          cp -r Samples~/SampleFolder1 ${{ env.created_project_path }}/Assets/
 
       - name: Run tests
         uses: game-ci/unity-test-runner@v2
