@@ -17,7 +17,7 @@ function github_workspace(): string {
 
 export async function run(): Promise<void> {
   try {
-    const dest: string = core.getInput('project_path')
+    const dest: string = core.getInput('project-path')
 
     const options = {recursive: true, force: false}
     await io.cp(
@@ -26,8 +26,8 @@ export async function run(): Promise<void> {
       options
     )
 
-    core.setOutput('created_project_path', dest)
-    core.exportVariable('created_project_path', dest)
+    core.setOutput('created-project-path', dest)
+    core.exportVariable('CREATED_PROJECT_PATH', dest)
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }

@@ -58,11 +58,11 @@ function github_workspace() {
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const dest = core.getInput('project_path');
+            const dest = core.getInput('project-path');
             const options = { recursive: true, force: false };
             yield io.cp(path.join(dist_dir(), 'UnityProject~'), path.join(github_workspace(), dest), options);
-            core.setOutput('created_project_path', dest);
-            core.exportVariable('created_project_path', dest);
+            core.setOutput('created-project-path', dest);
+            core.exportVariable('CREATED_PROJECT_PATH', dest);
         }
         catch (error) {
             if (error instanceof Error)

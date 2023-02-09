@@ -24,13 +24,13 @@ test(`test dist_dir()`, () => {
 test('test runs', async () => {
   const project_path = 'test2/testProject~'
 
-  process.env['INPUT_PROJECT_PATH'] = project_path
+  process.env['INPUT_PROJECT-PATH'] = project_path
   process.env['GITHUB_WORKSPACE'] = test_dir()
 
   const spy = jest.spyOn(core, 'setOutput')
   await run()
 
   expect(fs.existsSync(path.join(test_dir(), project_path))).toEqual(true)
-  expect(spy).toHaveBeenCalledWith('created_project_path', project_path)
-  expect(process.env.created_project_path).toEqual(project_path)
+  expect(spy).toHaveBeenCalledWith('created-project-path', project_path)
+  expect(process.env.CREATED_PROJECT_PATH).toEqual(project_path)
 })

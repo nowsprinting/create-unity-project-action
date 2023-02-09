@@ -14,26 +14,26 @@ Because this copies the Unity 2018.1.0f1 [^1] project template.
 
 ## Inputs
 
-### project\_path
+### project-path
 
-Path of the Unity project to be created, relative from /github/workspace.
+Path of the Unity project to be created, relative from repository root (/github/workspace).
 Default value is `UnityProject~`.
 
 
 ## Outputs
 
-### created\_project\_path
+### created-project-path
 
-Path of the created Unity project, relative from /github/workspace.
-Same as `project_path`.
+Path of the created Unity project, relative from repository root (/github/workspace).
+Same as `project-path`.
 
 
 ## Exported environment variables
 
-### created\_project\_path
+### CREATED\_PROJECT\_PATH
 
-Path of the created Unity project, relative from /github/workspace.
-Same as `project_path`.
+Path of the created Unity project, relative from repository root (/github/workspace).
+Same as `project-path`.
 
 
 ## Example usage
@@ -55,7 +55,7 @@ jobs:
       - name: Crete Unity project for tests
         uses: nowsprinting/create-unity-project-action@v1
         with:
-          project_path: UnityProject~
+          project-path: UnityProject~
 
       - name: Install dependencies
         run: |
@@ -63,16 +63,16 @@ jobs:
           openupm add -f com.unity.test-framework@1.3.2
           openupm add -f com.unity.testtools.codecoverage@1.2.2
           openupm add -ft your.package.name@file:../../
-        working-directory: ${{ env.created_project_path }}
+        working-directory: ${{ env.created-project-path }}
 
       - name: Move samples to include in run tests
         run: |
-          cp -r Samples~/SampleFolder1 ${{ env.created_project_path }}/Assets/
+          cp -r Samples~/SampleFolder1 ${{ env.created-project-path }}/Assets/
 
       - name: Run tests
         uses: game-ci/unity-test-runner@v2
         with:
-          projectPath: ${{ env.created_project_path }}
+          projectPath: ${{ env.created-project-path }}
           unityVersion: 2021.3.17f1
 ```
 
