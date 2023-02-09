@@ -53,7 +53,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Crete Unity project for tests
-        uses: nowsprinting/create-unity-project-action@v1
+        uses: nowsprinting/create-unity-project-action@v2
         with:
           project-path: UnityProject~
 
@@ -63,11 +63,11 @@ jobs:
           openupm add -f com.unity.test-framework@1.3.2
           openupm add -f com.unity.testtools.codecoverage@1.2.2
           openupm add -ft your.package.name@file:../../
-        working-directory: ${{ env.created-project-path }}
+        working-directory: ${{ env.CREATED_PROJECT_PATH }}
 
-      - name: Move samples to include in run tests
+      - name: Move samples to include in run tests (optional)
         run: |
-          cp -r Samples~/SampleFolder1 ${{ env.created-project-path }}/Assets/
+          cp -r Samples~/SampleFolder1 ${{ env.CREATED_PROJECT_PATH }}/Assets/
 
       - name: Run tests
         uses: game-ci/unity-test-runner@v2
@@ -75,6 +75,46 @@ jobs:
           projectPath: ${{ env.created-project-path }}
           unityVersion: 2021.3.17f1
 ```
+
+> **Note**  
+> [openupm](https://github.com/openupm/openupm-cli) command is used to update Packages/manifest.json.
+> `@file:../../` is relative path from Packages directory to repository root (as a package root).
+> And `-t` option is add package into `testables`.
+
+Before
+
+```shell
+<root>
+├── EDITOR/
+├── Runtime/
+├── Tests/
+├── LICENSE.md
+├── README.md
+└── package.json
+```
+
+After
+
+```shell
+<root>
+├── EDITOR/
+├── Runtime/
+├── Tests/
+├── UnityProject~/
+│   ├── Assets/
+│   ├── Library/
+│   ├── Logs/
+│   ├── Packages/
+│   ├── ProjectSettings/
+│   └── UnityProject~.sln
+├── LICENSE.md
+├── README.md
+└── package.json
+```
+
+> **Note**  
+> Unity ignores the contents of any folder name that ends with the ~ character and does not track them with .meta files.  
+> See more information: [Unity - Manual:  Package layout](https://docs.unity3d.com/Manual/cus-layout.html)
 
 
 ## License
