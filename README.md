@@ -72,7 +72,7 @@ jobs:
       - name: Run tests
         uses: game-ci/unity-test-runner@v2
         with:
-          projectPath: ${{ env.created-project-path }}
+          projectPath: ${{ env.CREATED_PROJECT_PATH }}
           unityVersion: 2021.3.17f1
 ```
 
