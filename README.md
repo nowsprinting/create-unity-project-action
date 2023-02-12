@@ -85,7 +85,7 @@ Before
 
 ```shell
 <root>
-├── EDITOR/
+├── Editor/
 ├── Runtime/
 ├── Tests/
 ├── LICENSE.md
@@ -97,7 +97,7 @@ After
 
 ```shell
 <root>
-├── EDITOR/
+├── Editor/
 ├── Runtime/
 ├── Tests/
 ├── UnityProject~/
