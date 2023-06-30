@@ -47,6 +47,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout repository
@@ -129,7 +131,7 @@ Open an issue or create a pull request.
 ### Start developing
 
 ```shell
-npm ci
+npm install
 ```
 
 ### Run tests
