@@ -13,7 +13,7 @@ outputs:
     description: 'Path of the created Unity project, relative from repository root (/github/workspace).'
 
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'
 
 branding:
