@@ -19,6 +19,14 @@ Because this copies the Unity 2018.1.0f1 [^1] project template.
 Path of the Unity project to be created, relative from repository root (/github/workspace).
 Default value is `UnityProject~`.
 
+### active-input-handler
+
+Active Input Handler setting for the Unity project.
+
+- 0: "Input Manager (Old)" (default)
+- 1: "Input System Package (New)"
+- 2: "Both"
+
 
 ## Outputs
 
