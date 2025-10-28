@@ -32,7 +32,7 @@ export async function run(): Promise<void> {
     )
     await fs.appendFile(
       projectSettingsPath,
-      `\n  activeInputHandler: ${core.getInput('active-input-handler')}\n`
+      `  activeInputHandler: ${core.getInput('active-input-handler')}\n`
     )
     // Note: "activeInputHandler" does not exist in the template's ProjectSettings.asset
 
