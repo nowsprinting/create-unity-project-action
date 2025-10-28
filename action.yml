@@ -4,9 +4,13 @@ author: 'nowsprinting'
 
 inputs:
   project-path:
-    required: false
     description: 'Path of the Unity project to be created, relative from repository root (/github/workspace).'
+    required: false
     default: 'UnityProject~'
+  active-input-handler:
+    description: 'Active Input Handler setting for the Unity project. 0: "Input Manager (Old)" (default), 1: "Input System Package (New)", and 2: "Both".'
+    required: false
+    default: '0'
 
 outputs:
   created-project-path:
