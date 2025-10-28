@@ -66,7 +66,7 @@ function run() {
             yield io.cp(path.join(dist_dir(), 'UnityProject~'), targetPath, options);
             // Set options
             const projectSettingsPath = path.join(targetPath, 'ProjectSettings', 'ProjectSettings.asset');
-            yield fs.appendFile(projectSettingsPath, `\n  activeInputHandler: ${core.getInput('active-input-handler')}\n`);
+            yield fs.appendFile(projectSettingsPath, `  activeInputHandler: ${core.getInput('active-input-handler')}\n`);
             // Note: "activeInputHandler" does not exist in the template's ProjectSettings.asset
             // Outputs
             core.setOutput('created-project-path', dest);
