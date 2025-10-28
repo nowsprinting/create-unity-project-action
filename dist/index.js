@@ -43,6 +43,7 @@ exports.run = exports.dist_dir = void 0;
 const core = __importStar(__nccwpck_require__(186));
 const io = __importStar(__nccwpck_require__(436));
 const path = __importStar(__nccwpck_require__(17));
+const fs = __importStar(__nccwpck_require__(292));
 function dist_dir() {
     const root = path.dirname(path.dirname(__filename));
     return path.join(root, `dist`);
@@ -58,9 +59,16 @@ function github_workspace() {
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            // Copy Unity project files
             const dest = core.getInput('project-path');
             const options = { recursive: true, force: false };
-            yield io.cp(path.join(dist_dir(), 'UnityProject~'), path.join(github_workspace(), dest), options);
+            const targetPath = path.join(github_workspace(), dest);
+            yield io.cp(path.join(dist_dir(), 'UnityProject~'), targetPath, options);
+            // Set options
+            const projectSettingsPath = path.join(targetPath, 'ProjectSettings', 'ProjectSettings.asset');
+            yield fs.appendFile(projectSettingsPath, `\n  activeInputHandler: ${core.getInput('active-input-handler')}\n`);
+            // Note: "activeInputHandler" does not exist in the template's ProjectSettings.asset
+            // Outputs
             core.setOutput('created-project-path', dest);
             core.exportVariable('CREATED_PROJECT_PATH', dest);
         }
@@ -3288,6 +3296,14 @@ module.exports = require("events");
 
 "use strict";
 module.exports = require("fs");
+
+/***/ }),
+
+/***/ 292:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("fs/promises");
 
 /***/ }),
 
