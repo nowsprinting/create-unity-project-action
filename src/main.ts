@@ -22,7 +22,21 @@ export async function run(): Promise<void> {
     const dest: string = core.getInput('project-path')
     const options = {recursive: true, force: false}
     const targetPath = path.join(github_workspace(), dest)
-    await io.cp(path.join(dist_dir(), 'UnityProject~'), targetPath, options)
+    const templatePath = path.join(dist_dir(), 'UnityProject~')
+
+    if (dest === '.' || dest === './') {
+      // Copy contents of UnityProject~ into the workspace root
+      const entries = await fs.readdir(templatePath)
+      for (const name of entries) {
+        const src = path.join(templatePath, name)
+        const dst = path.join(targetPath, name)
+        await io.cp(src, dst, options)
+      }
+    } else {
+      // Ensure parent directory exists before copying the template folder
+      await io.mkdirP(path.dirname(targetPath))
+      await io.cp(templatePath, targetPath, options)
+    }
 
     // Set options
     const projectSettingsPath = path.join(
