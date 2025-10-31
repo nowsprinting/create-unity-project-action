@@ -59,6 +59,7 @@ jobs:
         uses: ./
         with:
           project-path: UnityProject~
+          active-input-handler: 0
         id: test
 
       - name: Verify output
@@ -70,6 +71,44 @@ jobs:
       - name: Verify created project
         run: |
           ls -la "${{ steps.test.outputs.created-project-path }}"
+
+      - name: Verify activeInputHandler
+        run: |
+          PROJECT_SETTINGS_PATH="${{ steps.test.outputs.created-project-path }}/ProjectSettings/ProjectSettings.asset"
+          test -f "$PROJECT_SETTINGS_PATH"
+          grep -q "activeInputHandler: 0" "$PROJECT_SETTINGS_PATH"
+
+  test-project-path-is-workspace-root:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Test this action
+        uses: ./
+        with:
+          project-path: .
+          active-input-handler: 2
+        id: test
+
+      - name: Verify output
+        run: test "${{ steps.test.outputs.created-project-path }}" = "."
+
+      - name: Verify export environment variable
+        run: test "${{ env.CREATED_PROJECT_PATH }}" = "."
+
+      - name: Verify created project
+        run: |
+          ls -la "${{ steps.test.outputs.created-project-path }}"
+
+      - name: Verify activeInputHandler
+        run: |
+          PROJECT_SETTINGS_PATH="ProjectSettings/ProjectSettings.asset"
+          test -f "$PROJECT_SETTINGS_PATH"
+          grep -q "activeInputHandler: 2" "$PROJECT_SETTINGS_PATH"
 
   notify:
     needs: [ build, test ]

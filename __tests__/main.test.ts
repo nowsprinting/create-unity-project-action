@@ -34,6 +34,22 @@ test('test copy project files', async () => {
   expect(process.env.CREATED_PROJECT_PATH).toEqual(project_path)
 })
 
+test('test copy project files when project-path is `.`', async () => {
+  const project_path = '.'
+
+  process.env['INPUT_PROJECT-PATH'] = project_path
+  process.env['GITHUB_WORKSPACE'] = test_dir()
+
+  const spy = jest.spyOn(core, 'setOutput')
+  await run()
+
+  const ProjectSettingsPath = path.join(test_dir(), 'ProjectSettings', 'ProjectSettings.asset')
+  expect(fs.existsSync(ProjectSettingsPath)).toEqual(true)
+
+  expect(spy).toHaveBeenCalledWith('created-project-path', project_path)
+  expect(process.env.CREATED_PROJECT_PATH).toEqual(project_path)
+})
+
 test('test set activeInputHandler', async () => {
   const project_path = 'test2/testProject~'
 
@@ -46,6 +62,24 @@ test('test set activeInputHandler', async () => {
   const actualPath = path.join(
     test_dir(),
     project_path,
+    'ProjectSettings',
+    'ProjectSettings.asset'
+  )
+  const actual = fs.readFileSync(actualPath, 'utf8')
+  expect(actual).toEqual(expect.stringContaining('activeInputHandler: 2'))
+})
+
+test('test set activeInputHandler when project-path is `.`', async () => {
+  const project_path = '.'
+
+  process.env['INPUT_PROJECT-PATH'] = project_path
+  process.env['INPUT_ACTIVE-INPUT-HANDLER'] = '2'
+  process.env['GITHUB_WORKSPACE'] = test_dir()
+
+  await run()
+
+  const actualPath = path.join(
+    test_dir(),
     'ProjectSettings',
     'ProjectSettings.asset'
   )
