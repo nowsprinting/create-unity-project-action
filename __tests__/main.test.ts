@@ -12,7 +12,9 @@ function test_dir(): string {
 }
 
 beforeEach(async () => {
-  await io.rmRF(test_dir())
+  const dir = test_dir()
+  await io.rmRF(dir)
+  await io.mkdirP(dir)
 })
 
 test(`test dist_dir()`, () => {
