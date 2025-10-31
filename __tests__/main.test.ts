@@ -45,7 +45,11 @@ test('test copy project files when project-path is `.`', async () => {
   const spy = jest.spyOn(core, 'setOutput')
   await run()
 
-  const ProjectSettingsPath = path.join(test_dir(), 'ProjectSettings', 'ProjectSettings.asset')
+  const ProjectSettingsPath = path.join(
+    test_dir(),
+    'ProjectSettings',
+    'ProjectSettings.asset'
+  )
   expect(fs.existsSync(ProjectSettingsPath)).toEqual(true)
 
   expect(spy).toHaveBeenCalledWith('created-project-path', project_path)
