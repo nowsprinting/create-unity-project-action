@@ -86,7 +86,7 @@ jobs:
           unityVersion: 2021.3.17f1
 ```
 
-> **Note**  
+> [!NOTE]\
 > [openupm](https://github.com/openupm/openupm-cli) command is used to update Packages/manifest.json.
 > `@file:../../` is relative path from Packages directory to repository root (as a package root).
 > And `-t` option is add package into `testables`.
@@ -122,7 +122,7 @@ After
 └── package.json
 ```
 
-> **Note**  
+> [!NOTE]\
 > Unity ignores the contents of any folder name that ends with the ~ character and does not track them with .meta files.  
 > See more information: [Unity - Manual:  Package layout](https://docs.unity3d.com/Manual/cus-layout.html)
 
