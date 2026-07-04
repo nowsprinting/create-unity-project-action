@@ -82,29 +82,30 @@ jobs:
       contents: read
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
-
-      - name: Crete Unity project for tests
+      - name: Create project for run tests
         uses: nowsprinting/create-unity-project-action@v4
         with:
-          project-path: UnityProject~
+          project-path: .
           active-input-handler: 2
           scripting-backend: 1
           il2cpp-code-generation: 1
           managed-stripping-level: 3
+
+      - name: Checkout repository as embedded package
+        uses: actions/checkout@v7
+        with:
+          path: ${{ env.CREATED_PROJECT_PATH }}/Packages/your-package-name
+
+      - name: Copy Samples
+        run: |
+          mv ${{ env.CREATED_PROJECT_PATH }}/Packages/your-package-name/Samples~ ${{ env.CREATED_PROJECT_PATH }}/Assets/Samples
 
       - name: Install dependencies
         run: |
           npm install -g openupm-cli
           openupm add -f com.unity.test-framework@stable
           openupm add -f com.unity.testtools.codecoverage@latest
-          openupm add -ft your.package.name@file:../../
         working-directory: ${{ env.CREATED_PROJECT_PATH }}
-
-      - name: Move samples to include in run tests (optional)
-        run: |
-          cp -r Samples~/SampleFolder1 ${{ env.CREATED_PROJECT_PATH }}/Assets/
 
       - name: Run tests
         uses: game-ci/unity-test-runner@v4
@@ -113,41 +114,22 @@ jobs:
           unityVersion: 6000.3.19f1
 ```
 
+Resulting project structure:
+
+```shell
+<root>
+├── Assets/
+│   └── Samples/
+│     └── your-packages-sample/
+├── Packages/
+│   └── your-package-name/
+└── ProjectSettings/
+```
+
 > [!NOTE]\
 > [openupm](https://github.com/openupm/openupm-cli) command is used to update Packages/manifest.json.
 > `@file:../../` is relative path from Packages directory to repository root (as a package root).
 > And `-t` option is add package into `testables`.
-
-Before
-
-```shell
-<root>
-├── Editor/
-├── Runtime/
-├── Tests/
-├── LICENSE.md
-├── README.md
-└── package.json
-```
-
-After
-
-```shell
-<root>
-├── Editor/
-├── Runtime/
-├── Tests/
-├── UnityProject~/
-│   ├── Assets/
-│   ├── Library/
-│   ├── Logs/
-│   ├── Packages/
-│   ├── ProjectSettings/
-│   └── UnityProject~.sln
-├── LICENSE.md
-├── README.md
-└── package.json
-```
 
 > [!NOTE]\
 > Unity ignores the contents of any folder name that ends with the ~ character and does not track them with .meta files.
