@@ -66,6 +66,12 @@ function github_workspace() {
     }
     return workspace;
 }
+function setStandalone(content, key, value) {
+    if (value === '')
+        return content; // keep template value; empty replacement would corrupt YAML (`Standalone: `)
+    const regex = new RegExp(`(${key}: *\\n *Standalone: )\\d+`);
+    return content.replace(regex, (_match, prefix) => `${prefix}${value}`);
+}
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -90,8 +96,13 @@ function run() {
             }
             // Set options
             const projectSettingsPath = path.join(targetPath, 'ProjectSettings', 'ProjectSettings.asset');
-            yield fs.appendFile(projectSettingsPath, `  activeInputHandler: ${core.getInput('active-input-handler')}\n`);
-            // Note: "activeInputHandler" does not exist in the template's ProjectSettings.asset
+            let content = yield fs.readFile(projectSettingsPath, 'utf8');
+            content = setStandalone(content, 'scriptingBackend', core.getInput('scripting-backend'));
+            content = setStandalone(content, 'il2cppCodeGeneration', core.getInput('il2cpp-code-generation'));
+            content = setStandalone(content, 'managedStrippingLevel', core.getInput('managed-stripping-level'));
+            // Note: "activeInputHandler" does not exist in the template's ProjectSettings.asset, so it is appended
+            content += `  activeInputHandler: ${core.getInput('active-input-handler')}\n`;
+            yield fs.writeFile(projectSettingsPath, content);
             // Outputs
             core.setOutput('created-project-path', dest);
             core.exportVariable('CREATED_PROJECT_PATH', dest);

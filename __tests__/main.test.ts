@@ -15,6 +15,10 @@ beforeEach(async () => {
   const dir = test_dir()
   await io.rmRF(dir)
   await io.mkdirP(dir)
+  delete process.env['INPUT_ACTIVE-INPUT-HANDLER']
+  delete process.env['INPUT_SCRIPTING-BACKEND']
+  delete process.env['INPUT_IL2CPP-CODE-GENERATION']
+  delete process.env['INPUT_MANAGED-STRIPPING-LEVEL']
 })
 
 test(`test dist_dir()`, () => {
@@ -91,4 +95,67 @@ test('test set activeInputHandler when project-path is `.`', async () => {
   )
   const actual = fs.readFileSync(actualPath, 'utf8')
   expect(actual).toEqual(expect.stringContaining('activeInputHandler: 2'))
+})
+
+test('test set scripting-backend', async () => {
+  const project_path = 'test2/testProject~'
+
+  process.env['INPUT_PROJECT-PATH'] = project_path
+  process.env['INPUT_SCRIPTING-BACKEND'] = '1'
+  process.env['GITHUB_WORKSPACE'] = test_dir()
+
+  await run()
+
+  const actualPath = path.join(
+    test_dir(),
+    project_path,
+    'ProjectSettings',
+    'ProjectSettings.asset'
+  )
+  const actual = fs.readFileSync(actualPath, 'utf8')
+  expect(actual).toEqual(
+    expect.stringContaining('scriptingBackend:\n    Standalone: 1')
+  )
+})
+
+test('test set il2cpp-code-generation', async () => {
+  const project_path = 'test2/testProject~'
+
+  process.env['INPUT_PROJECT-PATH'] = project_path
+  process.env['INPUT_IL2CPP-CODE-GENERATION'] = '1'
+  process.env['GITHUB_WORKSPACE'] = test_dir()
+
+  await run()
+
+  const actualPath = path.join(
+    test_dir(),
+    project_path,
+    'ProjectSettings',
+    'ProjectSettings.asset'
+  )
+  const actual = fs.readFileSync(actualPath, 'utf8')
+  expect(actual).toEqual(
+    expect.stringContaining('il2cppCodeGeneration:\n    Standalone: 1')
+  )
+})
+
+test('test set managed-stripping-level', async () => {
+  const project_path = 'test2/testProject~'
+
+  process.env['INPUT_PROJECT-PATH'] = project_path
+  process.env['INPUT_MANAGED-STRIPPING-LEVEL'] = '3'
+  process.env['GITHUB_WORKSPACE'] = test_dir()
+
+  await run()
+
+  const actualPath = path.join(
+    test_dir(),
+    project_path,
+    'ProjectSettings',
+    'ProjectSettings.asset'
+  )
+  const actual = fs.readFileSync(actualPath, 'utf8')
+  expect(actual).toEqual(
+    expect.stringContaining('managedStrippingLevel:\n    Standalone: 3')
+  )
 })
