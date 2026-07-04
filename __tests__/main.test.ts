@@ -26,76 +26,46 @@ test(`test dist_dir()`, () => {
   expect(actual.substring(actual.length - 5)).toEqual(`/dist`)
 })
 
-test('test copy project files', async () => {
-  const project_path = 'test2/testProject~'
+test.each(['test2/testProject~', '.'])(
+  'test copy project files (project-path: %s)',
+  async (project_path: string) => {
+    process.env['INPUT_PROJECT-PATH'] = project_path
+    process.env['GITHUB_WORKSPACE'] = test_dir()
 
-  process.env['INPUT_PROJECT-PATH'] = project_path
-  process.env['GITHUB_WORKSPACE'] = test_dir()
+    const spy = jest.spyOn(core, 'setOutput')
+    await run()
 
-  const spy = jest.spyOn(core, 'setOutput')
-  await run()
+    const projectSettingsPath = path.join(
+      test_dir(),
+      project_path,
+      'ProjectSettings',
+      'ProjectSettings.asset'
+    )
+    expect(fs.existsSync(projectSettingsPath)).toEqual(true)
+    expect(spy).toHaveBeenCalledWith('created-project-path', project_path)
+    expect(process.env.CREATED_PROJECT_PATH).toEqual(project_path)
+  }
+)
 
-  expect(fs.existsSync(path.join(test_dir(), project_path))).toEqual(true)
-  expect(spy).toHaveBeenCalledWith('created-project-path', project_path)
-  expect(process.env.CREATED_PROJECT_PATH).toEqual(project_path)
-})
+test.each(['test2/testProject~', '.'])(
+  'test set activeInputHandler (project-path: %s)',
+  async (project_path: string) => {
+    process.env['INPUT_PROJECT-PATH'] = project_path
+    process.env['INPUT_ACTIVE-INPUT-HANDLER'] = '2'
+    process.env['GITHUB_WORKSPACE'] = test_dir()
 
-test('test copy project files when project-path is `.`', async () => {
-  const project_path = '.'
+    await run()
 
-  process.env['INPUT_PROJECT-PATH'] = project_path
-  process.env['GITHUB_WORKSPACE'] = test_dir()
-
-  const spy = jest.spyOn(core, 'setOutput')
-  await run()
-
-  const ProjectSettingsPath = path.join(
-    test_dir(),
-    'ProjectSettings',
-    'ProjectSettings.asset'
-  )
-  expect(fs.existsSync(ProjectSettingsPath)).toEqual(true)
-
-  expect(spy).toHaveBeenCalledWith('created-project-path', project_path)
-  expect(process.env.CREATED_PROJECT_PATH).toEqual(project_path)
-})
-
-test('test set activeInputHandler', async () => {
-  const project_path = 'test2/testProject~'
-
-  process.env['INPUT_PROJECT-PATH'] = project_path
-  process.env['INPUT_ACTIVE-INPUT-HANDLER'] = '2'
-  process.env['GITHUB_WORKSPACE'] = test_dir()
-
-  await run()
-
-  const actualPath = path.join(
-    test_dir(),
-    project_path,
-    'ProjectSettings',
-    'ProjectSettings.asset'
-  )
-  const actual = fs.readFileSync(actualPath, 'utf8')
-  expect(actual).toEqual(expect.stringContaining('activeInputHandler: 2'))
-})
-
-test('test set activeInputHandler when project-path is `.`', async () => {
-  const project_path = '.'
-
-  process.env['INPUT_PROJECT-PATH'] = project_path
-  process.env['INPUT_ACTIVE-INPUT-HANDLER'] = '2'
-  process.env['GITHUB_WORKSPACE'] = test_dir()
-
-  await run()
-
-  const actualPath = path.join(
-    test_dir(),
-    'ProjectSettings',
-    'ProjectSettings.asset'
-  )
-  const actual = fs.readFileSync(actualPath, 'utf8')
-  expect(actual).toEqual(expect.stringContaining('activeInputHandler: 2'))
-})
+    const actualPath = path.join(
+      test_dir(),
+      project_path,
+      'ProjectSettings',
+      'ProjectSettings.asset'
+    )
+    const actual = fs.readFileSync(actualPath, 'utf8')
+    expect(actual).toEqual(expect.stringContaining('activeInputHandler: 2'))
+  }
+)
 
 test('test set scripting-backend', async () => {
   const project_path = 'test2/testProject~'
