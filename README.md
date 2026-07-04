@@ -83,18 +83,22 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       - name: Crete Unity project for tests
-        uses: nowsprinting/create-unity-project-action@v2
+        uses: nowsprinting/create-unity-project-action@v4
         with:
           project-path: UnityProject~
+          active-input-handler: 2
+          scripting-backend: 1
+          il2cpp-code-generation: 1
+          managed-stripping-level: 3
 
       - name: Install dependencies
         run: |
           npm install -g openupm-cli
-          openupm add -f com.unity.test-framework@1.3.2
-          openupm add -f com.unity.testtools.codecoverage@1.2.2
+          openupm add -f com.unity.test-framework@stable
+          openupm add -f com.unity.testtools.codecoverage@latest
           openupm add -ft your.package.name@file:../../
         working-directory: ${{ env.CREATED_PROJECT_PATH }}
 
@@ -103,10 +107,10 @@ jobs:
           cp -r Samples~/SampleFolder1 ${{ env.CREATED_PROJECT_PATH }}/Assets/
 
       - name: Run tests
-        uses: game-ci/unity-test-runner@v2
+        uses: game-ci/unity-test-runner@v4
         with:
           projectPath: ${{ env.CREATED_PROJECT_PATH }}
-          unityVersion: 2021.3.17f1
+          unityVersion: 6000.3.19f1
 ```
 
 > [!NOTE]\
@@ -146,7 +150,7 @@ After
 ```
 
 > [!NOTE]\
-> Unity ignores the contents of any folder name that ends with the ~ character and does not track them with .meta files.  
+> Unity ignores the contents of any folder name that ends with the ~ character and does not track them with .meta files.
 > See more information: [Unity - Manual:  Package layout](https://docs.unity3d.com/Manual/cus-layout.html)
 
 
