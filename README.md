@@ -27,6 +27,29 @@ Active Input Handler setting for the Unity project.
 - 1: "Input System Package (New)"
 - 2: "Both"
 
+### scripting-backend
+
+Scripting Backend setting for the Unity project.
+
+- 0: "Mono" (default)
+- 1: "IL2CPP"
+
+### il2cpp-code-generation
+
+IL2CPP Code Generation setting for the Unity project.
+
+- 0: "Optimize for runtime speed" (default)
+- 1: "Optimize for code size and build time"
+
+### managed-stripping-level
+
+Managed Stripping Level setting for the Unity project.
+
+- 4: "Minimal" (default)
+- 1: "Low"
+- 2: "Medium"
+- 3: "High"
+
 
 ## Outputs
 

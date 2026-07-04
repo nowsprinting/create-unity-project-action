@@ -16,6 +16,12 @@ function github_workspace(): string {
   return workspace
 }
 
+function setStandalone(content: string, key: string, value: string): string {
+  if (value === '') return content // keep template value; empty replacement would corrupt YAML (`Standalone: `)
+  const regex = new RegExp(`(${key}: *\\n *Standalone: )\\d+`)
+  return content.replace(regex, (_match, prefix) => `${prefix}${value}`)
+}
+
 export async function run(): Promise<void> {
   try {
     // Copy Unity project files
@@ -44,11 +50,27 @@ export async function run(): Promise<void> {
       'ProjectSettings',
       'ProjectSettings.asset'
     )
-    await fs.appendFile(
-      projectSettingsPath,
-      `  activeInputHandler: ${core.getInput('active-input-handler')}\n`
+    let content = await fs.readFile(projectSettingsPath, 'utf8')
+    content = setStandalone(
+      content,
+      'scriptingBackend',
+      core.getInput('scripting-backend')
     )
-    // Note: "activeInputHandler" does not exist in the template's ProjectSettings.asset
+    content = setStandalone(
+      content,
+      'il2cppCodeGeneration',
+      core.getInput('il2cpp-code-generation')
+    )
+    content = setStandalone(
+      content,
+      'managedStrippingLevel',
+      core.getInput('managed-stripping-level')
+    )
+    // Note: "activeInputHandler" does not exist in the template's ProjectSettings.asset, so it is appended
+    content += `  activeInputHandler: ${core.getInput(
+      'active-input-handler'
+    )}\n`
+    await fs.writeFile(projectSettingsPath, content)
 
     // Outputs
     core.setOutput('created-project-path', dest)

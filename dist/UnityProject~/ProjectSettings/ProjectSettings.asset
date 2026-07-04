@@ -531,8 +531,13 @@ PlayerSettings:
   webGLLinkerTarget: 0
   scriptingDefineSymbols: {}
   platformArchitecture: {}
-  scriptingBackend: {}
+  scriptingBackend:
+    Standalone: 0
   il2cppCompilerConfiguration: {}
+  il2cppCodeGeneration:
+    Standalone: 0
+  managedStrippingLevel:
+    Standalone: 0
   incrementalIl2cppBuild: {}
   allowUnsafeCode: 0
   additionalIl2CppArgs: 
