@@ -20,9 +20,9 @@ inputs:
     required: false
     default: '0'
   managed-stripping-level:
-    description: 'Managed Stripping Level setting for the Unity project. 4: "Minimal" (default), 1: "Low", 2: "Medium", 3: "High".'
+    description: 'Managed Stripping Level setting for the Unity project. 0: "Disabled" (Mono default), 4: "Minimal" (IL2CPP default), 1: "Low", 2: "Medium", 3: "High".'
     required: false
-    default: '4'
+    default: '0'
 
 outputs:
   created-project-path:

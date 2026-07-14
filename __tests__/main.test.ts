@@ -109,11 +109,66 @@ test('test set il2cpp-code-generation', async () => {
   )
 })
 
-test('test set managed-stripping-level', async () => {
+test.each(['0', '1', '2', '3', '4'])(
+  'test managed-stripping-level %s is kept as is when scripting-backend is Mono',
+  async (managedStrippingLevel: string) => {
+    const project_path = 'test2/testProject~'
+
+    process.env['INPUT_PROJECT-PATH'] = project_path
+    process.env['INPUT_SCRIPTING-BACKEND'] = '0'
+    process.env['INPUT_MANAGED-STRIPPING-LEVEL'] = managedStrippingLevel
+    process.env['GITHUB_WORKSPACE'] = test_dir()
+
+    await run()
+
+    const actualPath = path.join(
+      test_dir(),
+      project_path,
+      'ProjectSettings',
+      'ProjectSettings.asset'
+    )
+    const actual = fs.readFileSync(actualPath, 'utf8')
+    expect(actual).toEqual(
+      expect.stringContaining(
+        `managedStrippingLevel:\n    Standalone: ${managedStrippingLevel}`
+      )
+    )
+  }
+)
+
+test.each(['1', '2', '3', '4'])(
+  'test managed-stripping-level %s is kept as is when scripting-backend is IL2CPP',
+  async (managedStrippingLevel: string) => {
+    const project_path = 'test2/testProject~'
+
+    process.env['INPUT_PROJECT-PATH'] = project_path
+    process.env['INPUT_SCRIPTING-BACKEND'] = '1'
+    process.env['INPUT_MANAGED-STRIPPING-LEVEL'] = managedStrippingLevel
+    process.env['GITHUB_WORKSPACE'] = test_dir()
+
+    await run()
+
+    const actualPath = path.join(
+      test_dir(),
+      project_path,
+      'ProjectSettings',
+      'ProjectSettings.asset'
+    )
+    const actual = fs.readFileSync(actualPath, 'utf8')
+    expect(actual).toEqual(
+      expect.stringContaining(
+        `managedStrippingLevel:\n    Standalone: ${managedStrippingLevel}`
+      )
+    )
+  }
+)
+
+test('test managed-stripping-level 0(Disabled) becomes 4(Minimal) when scripting-backend is IL2CPP', async () => {
   const project_path = 'test2/testProject~'
 
   process.env['INPUT_PROJECT-PATH'] = project_path
-  process.env['INPUT_MANAGED-STRIPPING-LEVEL'] = '3'
+  process.env['INPUT_SCRIPTING-BACKEND'] = '1'
+  process.env['INPUT_MANAGED-STRIPPING-LEVEL'] = '0'
   process.env['GITHUB_WORKSPACE'] = test_dir()
 
   await run()
@@ -126,6 +181,6 @@ test('test set managed-stripping-level', async () => {
   )
   const actual = fs.readFileSync(actualPath, 'utf8')
   expect(actual).toEqual(
-    expect.stringContaining('managedStrippingLevel:\n    Standalone: 3')
+    expect.stringContaining('managedStrippingLevel:\n    Standalone: 4')
   )
 })
