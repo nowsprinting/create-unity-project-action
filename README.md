@@ -45,7 +45,8 @@ IL2CPP Code Generation setting for the Unity project.
 
 Managed Stripping Level setting for the Unity project.
 
-- 4: "Minimal" (default)
+- 0: "Disabled" (Mono default)
+- 4: "Minimal" (IL2CPP default)
 - 1: "Low"
 - 2: "Medium"
 - 3: "High"

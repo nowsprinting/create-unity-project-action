@@ -97,9 +97,14 @@ function run() {
             // Set options
             const projectSettingsPath = path.join(targetPath, 'ProjectSettings', 'ProjectSettings.asset');
             let content = yield fs.readFile(projectSettingsPath, 'utf8');
-            content = setStandalone(content, 'scriptingBackend', core.getInput('scripting-backend'));
+            const scriptingBackend = core.getInput('scripting-backend');
+            content = setStandalone(content, 'scriptingBackend', scriptingBackend);
             content = setStandalone(content, 'il2cppCodeGeneration', core.getInput('il2cpp-code-generation'));
-            content = setStandalone(content, 'managedStrippingLevel', core.getInput('managed-stripping-level'));
+            const managedStrippingLevel = core.getInput('managed-stripping-level');
+            // IL2CPP's default is "Minimal" (4), not "Disabled" (0); Mono keeps "Disabled" (0) as its default.
+            const isIL2CPP = scriptingBackend === '1';
+            const isStrippingLevelDisabledOrUnset = managedStrippingLevel === '0' || managedStrippingLevel === '';
+            content = setStandalone(content, 'managedStrippingLevel', isIL2CPP && isStrippingLevelDisabledOrUnset ? '4' : managedStrippingLevel);
             // Note: "activeInputHandler" does not exist in the template's ProjectSettings.asset, so it is appended
             content += `  activeInputHandler: ${core.getInput('active-input-handler')}\n`;
             yield fs.writeFile(projectSettingsPath, content);
